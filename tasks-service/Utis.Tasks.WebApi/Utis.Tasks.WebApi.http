@@ -1,0 +1,6 @@
+@Utis.Tasks.WebApi_HostAddress = http://localhost:5223
+
+GET {{Utis.Tasks.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

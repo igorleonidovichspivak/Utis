@@ -3,10 +3,32 @@
 ################################################################################
 
 /postgres_data
-/.vs
-/tasks-service/.vs/Utis.Tasks
-/tasks-service/Utis.Tasks.WebApi/obj
-/tasks-service/Utis.Tasks.WebApi/bin/Debug/net8.0
-/processing-service/Utis.Processing.Service/bin/Debug/net8.0
-/processing-service/Utis.Processing.Service/obj
-/tasks-service/Utis.Tasks.Infrastructure/obj
+
+
+
+.vs/
+.vscode/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/Xamarin Studio)
+*.userprefs
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+
+# Click-Once directory
+publish/

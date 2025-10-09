@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16.1-alpine3.18
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: maindb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Admin123!
+      #PGDATA: "/var/lib/postgresql/data/pgdata"
+    ports:
+      - "7432:5432"
+    volumes:
+      - "./postgres_data:/var/lib/postgresql/data"
+      
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d maindb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+    restart: unless-stopped
+
+  tasks-service:
+    build:
+      context: ./tasks-service/Utis.Tasks.WebApi/
+      dockerfile: Dockerfile
+    container_name: tasks-service
+    ports:
+      - "5001:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=maindb;Username=admin;Password=Admin123!
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  processing-service:
+    build:
+      context: ./processing-service/Utis.Processing.Service/
+      dockerfile: Dockerfile
+    container_name: processing-service
+    ports:
+      - "5002:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=maindb;Username=admin;Password=Admin123!
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  microservices-net:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  
