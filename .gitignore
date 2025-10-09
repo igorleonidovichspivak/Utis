@@ -1,0 +1,12 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/postgres_data
+/.vs
+/tasks-service/.vs/Utis.Tasks
+/tasks-service/Utis.Tasks.WebApi/obj
+/tasks-service/Utis.Tasks.WebApi/bin/Debug/net8.0
+/processing-service/Utis.Processing.Service/bin/Debug/net8.0
+/processing-service/Utis.Processing.Service/obj
+/tasks-service/Utis.Tasks.Infrastructure/obj
