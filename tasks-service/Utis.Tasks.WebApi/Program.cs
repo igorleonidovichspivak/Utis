@@ -4,6 +4,7 @@ using Serilog.Core;
 using Mapster;
 using Utis.Tasks.WebApi.Configuration;
 using Utis.Tasks.WebApi.Middlewares;
+using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +33,11 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddApplicationServices(builder.Configuration);
+// convert all enums to strings
+builder.Services.Configure<JsonOptions>(options =>
+{
+	options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 var app = builder.Build();
 
