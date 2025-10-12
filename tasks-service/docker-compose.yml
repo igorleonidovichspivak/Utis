@@ -1,0 +1,6 @@
+services:
+  utis.tasks.webapi:
+    image: ${DOCKER_REGISTRY-}utistaskswebapi
+    build:
+      context: .
+      dockerfile: Utis.Tasks.WebApi/Dockerfile

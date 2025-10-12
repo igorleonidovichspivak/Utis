@@ -12,17 +12,18 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Utis.Tasks.WebApi.csproj", "."]
-
-RUN dotnet restore "Utis.Tasks.WebApi.csproj"
+COPY ["Utis.Tasks.WebApi/Utis.Tasks.WebApi.csproj", "Utis.Tasks.WebApi/"]
+COPY ["Utis.Tasks.Infrastructure/Utis.Tasks.Infrastructure.csproj", "Utis.Tasks.Infrastructure/"]
+COPY ["Utis.Tasks.Domain/Utis.Tasks.Domain.csproj", "Utis.Tasks.Domain/"]
+RUN dotnet restore "./Utis.Tasks.WebApi/Utis.Tasks.WebApi.csproj"
 COPY . .
-
+WORKDIR "/src/Utis.Tasks.WebApi"
 RUN dotnet build "./Utis.Tasks.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "Utis.Tasks.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Utis.Tasks.WebApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
