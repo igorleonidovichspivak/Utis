@@ -82,6 +82,7 @@ namespace Utis.Tasks.WebApi.Controllers
 			_ = Enum.TryParse(request.Status, out TaskState state) ? state : state = TaskState.InProgress;
 			var updatedTask = new TaskEntity
 			{
+				Id = request.Id,
 				Status = state,
 				Title = request.Title,
 				Description = request.Description,
@@ -112,29 +113,48 @@ namespace Utis.Tasks.WebApi.Controllers
 		[HttpGet]
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult<PagedFiltredTasksResponse>> GetAll([FromQuery] PagedFiltredTasksRequest? request)
+		public async Task<ActionResult<PagedResponse<TaskEntity>>> GetAll([FromQuery] PagedFiltredTasksRequest? request)
 		{
-			IEnumerable<TaskEntity> result;
-
-			//todo: handle bad requests
-			//if request is valid 
-
-			_ = Enum.TryParse(request!.Status, out TaskState state);
-
-			var (tasks, totalCount) = await _taskService.GetPagedFiltred(request.Page!.Value, request.PageSize!.Value, state);
-
-			var response = new //PagedResponse<TaskResponseDto>
+			//cannot filter by fake status, but null/empty status is allowed
+			if (!string.IsNullOrEmpty(request!.Status) & !Enum.TryParse(request!.Status, out TaskState _))
 			{
-				Items = tasks,
-				Page = request.Page,
-				PageSize = request.PageSize,
+				return BadRequest($"Invalid status value: {request.Status}");
+			}
+
+			TaskState? status = null;
+			if (!string.IsNullOrEmpty(request.Status) &&
+				Enum.TryParse(request.Status, out TaskState parsedStatus))
+			{
+				status = parsedStatus;
+			}
+
+			// 1 case: non-paged results (all tasks or filtered by status)
+			if (!request.Page.HasValue || !request.PageSize.HasValue)
+			{
+				var allTasks = await _taskService.GetAll(status);
+
+				return Ok(new PagedResponse<TaskEntity>
+				{
+					Items = allTasks.ToList(),
+					Page = 1,
+					PageSize = allTasks.Count(),
+					TotalCount = allTasks.Count()
+				});
+			}
+
+			// 2 case:  paged results (with optional status filter)
+			var (tasks, totalCount) = await _taskService.GetPagedFiltred(request.Page!.Value, request.PageSize!.Value, status);
+
+			return Ok(new PagedResponse<TaskEntity>
+			{
+				Items = tasks.ToList(),
+				Page = request.Page.Value,
+				PageSize = request.PageSize.Value,
 				TotalCount = totalCount
-			};
-
-			return Ok(response);
-
+			});
 		}
-    }
+		
+	}
 
     
 }

@@ -40,7 +40,7 @@ namespace Utis.Tasks.Infrastructure.Repositories
 
 		public async Task<bool> Update(TaskEntity updatedTask)
 		{
-			var existedTask = await Context.Tasks.AsTracking().FirstOrDefaultAsync(s => s.Id == updatedTask.Id);
+			var existedTask = await Context.Tasks.FirstOrDefaultAsync(s => s.Id == updatedTask.Id);
 			if (existedTask == null)
 			{
 				return false;
@@ -68,10 +68,20 @@ namespace Utis.Tasks.Infrastructure.Repositories
 
 		
 
-		public async Task<IEnumerable<TaskEntity>> GetAll()
+		public async Task<IEnumerable<TaskEntity>> GetAll(TaskState? status)
 		{
-			return await Context.Tasks.ToListAsync().ConfigureAwait(false);
+			var query = Context.Tasks.AsQueryable();
+
+			if (status.HasValue)
+			{
+				query = query.Where(t => t.Status == status.Value);
+			}
+
+			return await query.ToListAsync().ConfigureAwait(false);
 		}
+
+
+
 
 		public async Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status)
 		{
@@ -82,16 +92,13 @@ namespace Utis.Tasks.Infrastructure.Repositories
 				query = query.Where(t => t.Status == status.Value);
 			}
 
-			var totalCount = query.CountAsync();
-			var tasks = query
+			var totalCount = await query.CountAsync().ConfigureAwait(false);
+			var tasks = await query
 				.Skip((page - 1) * pageSize)
 				.Take(pageSize)
-				.ToListAsync();
+				.ToListAsync().ConfigureAwait(false);
 
-
-			await Task.WhenAll(totalCount, tasks).ConfigureAwait(false);
-
-			return (Tasks: tasks.Result, TotalCount: totalCount.Result);
+			return (Tasks: tasks, TotalCount: totalCount);
 		}
 	}
 }

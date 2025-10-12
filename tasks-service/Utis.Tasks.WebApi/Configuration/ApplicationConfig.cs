@@ -19,10 +19,11 @@ namespace Utis.Tasks.WebApi.Configuration
 				//if (EntityFrameworkLog) options.UseLoggerFactory(EFLoggerFactory);
 				options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"), 
 				o => o.CommandTimeout(30)
-					.SetPostgresVersion(13, 0)
-							//.UseNodaTime()
-					).UseSnakeCaseNamingConvention();
-			}, ServiceLifetime.Transient, ServiceLifetime.Transient);
+					.SetPostgresVersion(13, 0))
+				.UseSnakeCaseNamingConvention()
+				.EnableSensitiveDataLogging()
+				.EnableDetailedErrors();
+			}, ServiceLifetime.Scoped, ServiceLifetime.Scoped);
 
 			services.AddSingleton<Serilog.ILogger>(Log.Logger);
 

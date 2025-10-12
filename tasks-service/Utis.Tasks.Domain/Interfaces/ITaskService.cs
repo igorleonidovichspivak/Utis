@@ -10,7 +10,7 @@ namespace Utis.Tasks.Domain.Interfaces
 		Task<bool> Update(TaskEntity newTask);
 		Task<bool> Delete(int taskId);
 
-		Task<IEnumerable<TaskEntity>> GetAll();
-		Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState status);
+		Task<IEnumerable<TaskEntity>> GetAll(TaskState? status = null);
+		Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status = null);
 	}
 }

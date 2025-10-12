@@ -66,11 +66,11 @@ namespace Utis.Tasks.WebApi.Services
 			return deleteSucessfull;
 		}
 
-		public async Task<IEnumerable<TaskEntity>> GetAll()
+		public async Task<IEnumerable<TaskEntity>> GetAll(TaskState? status)
 		{
-			return await _taskRepository.GetAll();
+			return await _taskRepository.GetAll(status);
 		}
-		public async Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState status)
+		public async Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status)
 		{
 			return await _taskRepository.GetPagedFiltred(page, pageSize, status);
 		}
