@@ -1,10 +1,14 @@
+using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Core;
-using Mapster;
+using System;
+using System.Text.Json.Serialization;
+using Utis.Tasks.Infrastructure;
+using Utis.Tasks.WebApi.BackgroundServices;
 using Utis.Tasks.WebApi.Configuration;
 using Utis.Tasks.WebApi.Middlewares;
-using System.Text.Json.Serialization;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,6 +37,7 @@ Log.Logger = new LoggerConfiguration()
 builder.Host.UseSerilog();
 
 builder.Services.AddApplicationServices(builder.Configuration);
+
 // convert all enums to strings
 builder.Services.Configure<JsonOptions>(options =>
 {
@@ -40,6 +45,14 @@ builder.Services.Configure<JsonOptions>(options =>
 });
 
 var app = builder.Build();
+
+//auto db migration
+//using (var scope = app.Services.CreateScope())
+//{
+//	var dbContext = scope.ServiceProvider.GetRequiredService<StorageContext>();
+//	dbContext.Database.Migrate();
+//}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
@@ -56,7 +69,7 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseRouting();
 app.MapHealthChecks("/health");
-app.MapGet("/myhealth", () => "Service is running!");
+
 
 
 app.MapControllers();

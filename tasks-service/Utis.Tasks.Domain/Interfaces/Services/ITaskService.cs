@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Utis.Tasks.Domain.Entities;
 
-namespace Utis.Tasks.Domain.Interfaces
+namespace Utis.Tasks.Domain.Interfaces.Services
 {
 	public interface ITaskService
 	{

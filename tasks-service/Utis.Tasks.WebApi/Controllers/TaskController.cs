@@ -2,7 +2,7 @@ using Mapster;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Utis.Tasks.Domain.Entities;
-using Utis.Tasks.Domain.Interfaces;
+using Utis.Tasks.Domain.Interfaces.Services;
 using Utis.Tasks.WebApi.Dtos;
 using Utis.Tasks.WebApi.Models;
 using Utis.Tasks.WebApi.Services;

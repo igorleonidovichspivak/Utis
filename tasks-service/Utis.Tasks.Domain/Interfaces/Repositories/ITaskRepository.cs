@@ -1,6 +1,6 @@
 ﻿using Utis.Tasks.Domain.Entities;
 
-namespace Utis.Tasks.Infrastructure.Repositories
+namespace Utis.Tasks.Domain.Interfaces.Repositories
 {
 	public interface ITaskRepository
 	{
@@ -10,5 +10,7 @@ namespace Utis.Tasks.Infrastructure.Repositories
 		Task<bool> Delete(int taskId);
 		Task<IEnumerable<TaskEntity>> GetAll(TaskState? status);
 		Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status);
+		Task<IEnumerable<TaskEntity>> GetOverdueTasks(DateTime onTime);
+		Task<int> SetOverdueStatus(List<int> taskIds);
 	}
 }

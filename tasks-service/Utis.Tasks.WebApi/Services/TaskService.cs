@@ -1,7 +1,7 @@
 ﻿
 using Utis.Tasks.Domain.Entities;
-using Utis.Tasks.Domain.Interfaces;
-using Utis.Tasks.Infrastructure.Repositories;
+using Utis.Tasks.Domain.Interfaces.Repositories;
+using Utis.Tasks.Domain.Interfaces.Services;
 using Utis.Tasks.WebApi.Models;
 
 

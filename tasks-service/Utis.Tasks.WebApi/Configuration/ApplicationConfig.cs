@@ -5,8 +5,10 @@ using Serilog;
 using Utis.Tasks.WebApi.Services;
 using Utis.Tasks.Infrastructure;
 using Utis.Tasks.Infrastructure.Repositories;
-using Utis.Tasks.Domain.Interfaces;
 using Utis.Tasks.Domain.Entities;
+using Utis.Tasks.WebApi.BackgroundServices;
+using Utis.Tasks.Domain.Interfaces.Repositories;
+using Utis.Tasks.Domain.Interfaces.Services;
 
 namespace Utis.Tasks.WebApi.Configuration
 {
@@ -27,6 +29,7 @@ namespace Utis.Tasks.WebApi.Configuration
 
 			services.AddSingleton<Serilog.ILogger>(Log.Logger);
 
+			services.AddSingleton<IRabbitMqService, RabbitMqService>();
 			// сервис для хэширования паролей
 			//services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 			// сервис для генерации JWT токенов
@@ -42,7 +45,7 @@ namespace Utis.Tasks.WebApi.Configuration
 			//services.AddScoped<IChatService, ChatService>();
 			//services.AddScoped<IMessageService, MessageService>();
 
-			
+			services.AddHostedService<OverdueService>();
 
 
 

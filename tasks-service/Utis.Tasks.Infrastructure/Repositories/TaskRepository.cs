@@ -1,11 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
+using Microsoft.EntityFrameworkCore;
 using Utis.Tasks.Domain.Entities;
+using Utis.Tasks.Domain.Interfaces.Repositories;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Utis.Tasks.Infrastructure.Repositories
@@ -99,6 +95,22 @@ namespace Utis.Tasks.Infrastructure.Repositories
 				.ToListAsync().ConfigureAwait(false);
 
 			return (Tasks: tasks, TotalCount: totalCount);
+		}
+
+		public async Task<IEnumerable<TaskEntity>> GetOverdueTasks(DateTime onTime)
+		{
+			return await Context.Tasks
+				.Where(s => (s.Status == TaskState.New || s.Status == TaskState.InProgress) && s.DueDate < onTime)
+				.ToListAsync();
+		}
+
+		public async Task<int> SetOverdueStatus(List<int> taskIds)
+		{
+			return await Context.Tasks
+				.Where(t => taskIds.Contains(t.Id))
+				.ExecuteUpdateAsync(setters => setters
+					.SetProperty(t => t.Status, TaskState.Overdue));
+
 		}
 	}
 }
