@@ -121,7 +121,7 @@ namespace Utis.Tasks.WebApi.Services
 										cancellationToken: cancellationToken);
 				
 
-				_logger.LogInformation($"Message sent to queue {_queueName}");
+				_logger.LogInformation($"Message {message} sent to queue {_queueName}");
 			}
 			catch (OperationCanceledException)
 			{
