@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Utis.Tasks.Domain.Entities;
+﻿using Utis.Tasks.Domain.Entities;
 
 namespace Utis.Tasks.Domain.Interfaces.Services
 {

@@ -9,6 +9,7 @@ using Utis.Tasks.Infrastructure;
 using Utis.Tasks.WebApi.BackgroundServices;
 using Utis.Tasks.WebApi.Configuration;
 using Utis.Tasks.WebApi.Middlewares;
+using Utis.Tasks.WebApi.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,8 @@ Log.Logger = new LoggerConfiguration()
 	.CreateLogger();
 
 builder.Host.UseSerilog();
+
+builder.Services.AddMemoryCache();
 
 builder.Services.AddApplicationServices(builder.Configuration);
 
