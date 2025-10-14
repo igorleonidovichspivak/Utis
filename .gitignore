@@ -35,3 +35,5 @@ publish/
 /rabbitmq_data
 /rabbitmq_logs
 /logs
+/temp-scripts
+/temp-scripts/migration.sql

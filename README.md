@@ -1,12 +1,15 @@
 # Utis
 
-docker-compose should start application in Docker.
+docker-compose up -d --build 
+    should start application in Docker.
 
 Contains 2 services: 
     1) task-service
     2) processing-service
 
 Task service use RestApi to manage tasks
+
+    http://localhost:5001/swagger
 
     POST /api/tasks - creating new task
 
@@ -21,10 +24,14 @@ Task service use RestApi to manage tasks
     GET /api/currency
 
 Logs stored in folder 
-    \tasks-service\Utis.Tasks.WebApi\Logs\
-    \processing-service\Utis.Processing.Service\Logs\
+    \logs\tasks-service\
+    \logs\processing-service\
 
 Data stores in PostgreSQL.
+    localhost:7432/
+        admin/Admin123!
+        db: maindb
+        table: tasks
 
 Initial scripts for creating db
     \init-scripts 
@@ -33,15 +40,19 @@ Volume for db
 
 
 RabbitMQ used for sending messages.
+    localhost:17672/
+    guest/guest
+    
+    Overdue tasks should be appeared in 'expired-tasks' queue
 
 Volumes for RabbitMQ 
     \rabbitmq_data
     \rabbitmq_logs
 
 
-Services can be run by  
+
  
-    docker-compose up -d --build
+    
 
 
 
