@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Core;
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Utis.Tasks.Infrastructure;
 using Utis.Tasks.WebApi.BackgroundServices;
@@ -71,9 +72,32 @@ app.UseAuthorization();
 //TODO: add tracing middleware with opentel
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseRouting();
-app.MapHealthChecks("/health");
+app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+{
+	ResponseWriter = async (context, report) =>
+	{
+		var result = new
+		{
+			status = report.Status.ToString(),
+			timestamp = DateTime.UtcNow
+		};
 
+		context.Response.ContentType = "application/json";
+		await context.Response.WriteAsync(JsonSerializer.Serialize(result));
+	}
+});
 
+//// Health check endpoint
+//app.MapGet("/health", () =>
+//{
+//	return Results.Ok(new
+//	{
+//		status = "Healthy",
+//		timestamp = DateTime.UtcNow,
+//		service = "Currency API"
+//	});
+//})
+//.WithName("HealthCheck");
 
 app.MapControllers();
 

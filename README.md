@@ -18,15 +18,32 @@ Task service use RestApi to manage tasks
 
     GET /api/tasks - list of task by status (with pagination)
 
-Logs stored in folder ..\Utis.Tasks.WebApi\Logs\
+    GET /api/currency
+
+Logs stored in folder 
+    \tasks-service\Utis.Tasks.WebApi\Logs\
+    \processing-service\Utis.Processing.Service\Logs\
 
 Data stores in PostgreSQL.
 
+Initial scripts for creating db
+    \init-scripts 
+Volume for db 
+    \postgres_data
+
+
+RabbitMQ used for sending messages.
+
+Volumes for RabbitMQ 
+    \rabbitmq_data
+    \rabbitmq_logs
+
+
 Services can be run by  
  
-    docker-compose up -d
+    docker-compose up -d --build
 
-\init-scripts should contains initial scripts for creating db
+
 
 
 
