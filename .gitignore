@@ -32,3 +32,6 @@ bld/
 
 # Click-Once directory
 publish/
+/rabbitmq_data
+/rabbitmq_logs
+/logs
