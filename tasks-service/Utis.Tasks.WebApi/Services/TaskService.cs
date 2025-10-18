@@ -1,8 +1,6 @@
-﻿
-using Utis.Tasks.Domain.Entities;
-using Utis.Tasks.Domain.Interfaces.Repositories;
+﻿using Utis.Tasks.Domain.Interfaces.Repositories;
 using Utis.Tasks.Domain.Interfaces.Services;
-using Utis.Tasks.WebApi.Models;
+using Utis.Tasks.Domain.Models;
 
 
 namespace Utis.Tasks.WebApi.Services
@@ -17,7 +15,7 @@ namespace Utis.Tasks.WebApi.Services
 			_taskRepository = taskRepository;
 		}
 
-		public async Task<int> Create(TaskEntity newTask)
+		public async Task<int> Create(TaskModel newTask)
 		{
 			var result = await _taskRepository.Create(newTask);
 			_logger.LogInformation($"Task with title {newTask.Title} and description {newTask.Description} and over due date {newTask.DueDate} created with such id {result}");
@@ -25,7 +23,7 @@ namespace Utis.Tasks.WebApi.Services
 			return result;
 		}
 
-		public async Task<TaskEntity> Get(int taskId)
+		public async Task<TaskModel> Get(int taskId)
 		{
 			var result =  await _taskRepository.Get(taskId);
 			_logger.LogInformation($"Successfully get task by id {taskId}");
@@ -33,7 +31,7 @@ namespace Utis.Tasks.WebApi.Services
 			return result;
 		}
 
-		public async Task<bool> Update(TaskEntity updatedTask)
+		public async Task<bool> Update(TaskModel updatedTask)
 		{
 			var succefullUpdate = await _taskRepository.Update(updatedTask);
 
@@ -66,11 +64,11 @@ namespace Utis.Tasks.WebApi.Services
 			return deleteSucessfull;
 		}
 
-		public async Task<IEnumerable<TaskEntity>> GetAll(TaskState? status)
+		public async Task<IEnumerable<TaskModel>> GetAll(TaskState? status)
 		{
 			return await _taskRepository.GetAll(status);
 		}
-		public async Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status)
+		public async Task<(IEnumerable<TaskModel> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status)
 		{
 			return await _taskRepository.GetPagedFiltred(page, pageSize, status);
 		}

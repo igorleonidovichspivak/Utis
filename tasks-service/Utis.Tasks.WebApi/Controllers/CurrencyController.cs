@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Utis.Tasks.Domain.Entities;
 using Utis.Tasks.Domain.Interfaces.Services;
+using Utis.Tasks.Domain.Models;
 
 namespace Utis.Tasks.WebApi.Controllers
 {

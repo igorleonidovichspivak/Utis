@@ -1,15 +1,13 @@
-﻿using Utis.Tasks.Domain.Models;
-using Utis.Tasks.WebApi.Models;
-
-namespace Utis.Tasks.WebApi.Dtos
+﻿namespace Utis.Tasks.Domain.Models
 {
-	public class TaskDto
+
+	public class TaskModel
 	{
 		public int Id { get; set; }
 		public string Title { get; set; } = string.Empty;
 		public string Description { get; set; } = string.Empty;
 		public DateTime? DueDate { get; set; }
-		public string Status { get; set; } = TaskState.New.ToString();
+		public TaskState Status {  get; set; }
 
 	}
 }

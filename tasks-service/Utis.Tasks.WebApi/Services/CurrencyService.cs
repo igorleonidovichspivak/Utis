@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Utis.Tasks.Domain.Entities;
 using Utis.Tasks.Domain.Interfaces.Services;
+using Utis.Tasks.Domain.Models;
 using Utis.Tasks.WebApi.Models;
+using Utis.Tasks.WebApi.Models.Converters;
 
 namespace Utis.Tasks.WebApi.Services
 {

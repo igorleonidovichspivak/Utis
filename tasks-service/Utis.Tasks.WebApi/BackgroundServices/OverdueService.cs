@@ -1,10 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
-using Utis.Tasks.Domain.Entities;
+﻿using Utis.Tasks.Domain.Models;
 using Utis.Tasks.Domain.Interfaces.Repositories;
 using Utis.Tasks.Domain.Interfaces.Services;
 using Utis.Tasks.WebApi.Dtos;
 using Utis.Tasks.WebApi.Services;
+using Utis.Tasks.WebApi.Mapping;
 
 namespace Utis.Tasks.WebApi.BackgroundServices
 {
@@ -62,15 +61,7 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 					foreach (var overdueTask in overdueTasks)
 					{
 
-						var message = new TaskEntityExpiredMessage
-						{
-							Id = overdueTask.Id,
-							Title = overdueTask.Title,
-							Description = overdueTask.Description,
-							DueDate = overdueTask.DueDate,
-							Status = overdueTask.Status,
-							DetectAt = currentTime
-						};
+						var message = overdueTask.ToExpiredMessage(currentTime);
 
 						await rabbitMq.SendMessageAsync(message, cancellationToken);
 

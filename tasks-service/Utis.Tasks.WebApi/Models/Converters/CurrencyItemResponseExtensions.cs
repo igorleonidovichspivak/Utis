@@ -1,6 +1,6 @@
-﻿using Utis.Tasks.Domain.Entities;
+﻿using Utis.Tasks.Domain.Models;
 
-namespace Utis.Tasks.WebApi.Models
+namespace Utis.Tasks.WebApi.Models.Converters
 {
 	public static class CurrencyItemResponseExtensions
 	{

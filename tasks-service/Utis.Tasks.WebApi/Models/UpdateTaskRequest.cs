@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Utis.Tasks.Domain.Entities;
+using Utis.Tasks.Domain.Models;
 using Utis.Tasks.WebApi.Validation;
 
 namespace Utis.Tasks.WebApi.Models
@@ -21,5 +21,6 @@ namespace Utis.Tasks.WebApi.Models
 		[Required(ErrorMessage = "Status is required")]
 		[EnumDataType(typeof(TaskState), ErrorMessage = "Invalid task status")]
 		public string Status { get; set; } = string.Empty;
+
 	}
 }

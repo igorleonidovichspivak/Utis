@@ -1,4 +1,4 @@
-﻿namespace Utis.Tasks.Domain.Entities
+﻿namespace Utis.Tasks.Domain.Models
 {
 	public class CurrencyRate
 	{

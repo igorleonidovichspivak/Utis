@@ -1,5 +1,4 @@
-﻿using System;
-namespace Utis.Tasks.Domain.Entities
+﻿namespace Utis.Tasks.Infrastructure.Entities
 {
 	public class TaskEntity
 	{

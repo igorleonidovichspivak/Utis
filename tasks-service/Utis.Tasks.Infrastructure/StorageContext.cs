@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using System.Data.Common;
-using Utis.Tasks.Domain.Entities;
+using Utis.Tasks.Domain.Models;
 using Utis.Tasks.Infrastructure.EntityConfigurations;
+using Utis.Tasks.Infrastructure.Entities;
 
 namespace Utis.Tasks.Infrastructure
 {
@@ -27,26 +28,6 @@ namespace Utis.Tasks.Infrastructure
 		}
 	}
 
-	//public class StorageContextFactory : IDesignTimeDbContextFactory<StorageContext>
-	//{
-	//	public StorageContext CreateDbContext(string[] args)
-	//	{
-	//		var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development" ?? "Docker";
-						
-
-	//		var configuration = new ConfigurationBuilder()
-	//			.SetBasePath(Directory.GetCurrentDirectory())
-	//			.AddJsonFile("appsettings.json")
-	//			.AddJsonFile($"appsettings.{environment}.json", true)
-	//			.Build();
-
-	//		var optionsBuilder = new DbContextOptionsBuilder<StorageContext>();
-	//		var connectionString = configuration.GetConnectionString("DefaultConnection");
-
-	//		optionsBuilder.UseNpgsql(connectionString);
-
-	//		return new StorageContext(optionsBuilder.Options);
-	//	}
-	//}
+	
 
 }

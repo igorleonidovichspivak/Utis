@@ -14,6 +14,6 @@ namespace Utis.Tasks.WebApi.Models
 
 		[FutureDate(ErrorMessage = "Due date must be in the future")]
 		public DateTime DueDate { get; set; }
-		
+
 	}
 }

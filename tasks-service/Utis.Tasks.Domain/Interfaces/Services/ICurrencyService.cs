@@ -1,4 +1,4 @@
-﻿using Utis.Tasks.Domain.Entities;
+﻿using Utis.Tasks.Domain.Models;
 
 namespace Utis.Tasks.Domain.Interfaces.Services
 {

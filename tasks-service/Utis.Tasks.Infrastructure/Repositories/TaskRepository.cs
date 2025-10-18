@@ -1,8 +1,9 @@
 ﻿using System.Data;
 using Microsoft.EntityFrameworkCore;
-using Utis.Tasks.Domain.Entities;
 using Utis.Tasks.Domain.Interfaces.Repositories;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using DomainModel = Utis.Tasks.Domain.Models;
+using Utis.Tasks.Infrastructure.Entities;
+
 
 namespace Utis.Tasks.Infrastructure.Repositories
 {
@@ -14,8 +15,9 @@ namespace Utis.Tasks.Infrastructure.Repositories
 			Context = context;	
 		}
 
-		public async Task<int> Create(TaskEntity newTask)
+		public async Task<int> Create(DomainModel.TaskModel newTaskModel)
 		{
+			var newTask = newTaskModel.ToEntity();
 			var createdTask = await Context.Tasks.AddAsync(newTask);
 
 			await Context.SaveChangesAsync().ConfigureAwait(false);
@@ -23,7 +25,7 @@ namespace Utis.Tasks.Infrastructure.Repositories
 			return createdTask.Entity.Id;
 		}
 
-		public async Task<TaskEntity> Get(int taskId)
+		public async Task<DomainModel.TaskModel> Get(int taskId)
 		{
 			var possibleTask = await Context.Tasks.FirstOrDefaultAsync(s => s.Id == taskId).ConfigureAwait(false);
 			if (possibleTask == null)
@@ -31,11 +33,12 @@ namespace Utis.Tasks.Infrastructure.Repositories
 				throw new Exception($"Task with id {taskId} does not exist");
 			}
 
-			return possibleTask;
+			return possibleTask.ToModel();
 		}
 
-		public async Task<bool> Update(TaskEntity updatedTask)
+		public async Task<bool> Update(DomainModel.TaskModel updatedTaskModel)
 		{
+			var updatedTask = updatedTaskModel.ToEntity();
 			var existedTask = await Context.Tasks.FirstOrDefaultAsync(s => s.Id == updatedTask.Id);
 			if (existedTask == null)
 			{
@@ -64,43 +67,46 @@ namespace Utis.Tasks.Infrastructure.Repositories
 
 		
 
-		public async Task<IEnumerable<TaskEntity>> GetAll(TaskState? status)
+		public async Task<IEnumerable<DomainModel.TaskModel>> GetAll(DomainModel.TaskState? status)
 		{
+			TaskState? entityStatus = (TaskState?) status;
 			var query = Context.Tasks.AsQueryable();
 
 			if (status.HasValue)
 			{
-				query = query.Where(t => t.Status == status.Value);
+				query = query.Where(t => t.Status == entityStatus.Value);
 			}
 
-			return await query.ToListAsync().ConfigureAwait(false);
+			return await query.Select(s => s.ToModel()).ToListAsync().ConfigureAwait(false);
 		}
 
 
 
 
-		public async Task<(IEnumerable<TaskEntity> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, TaskState? status)
+		public async Task<(IEnumerable<DomainModel.TaskModel> Tasks, int TotalCount)> GetPagedFiltred(int page, int pageSize, DomainModel.TaskState? status)
 		{
 			var query = Context.Tasks.AsQueryable();
 
 			if (status.HasValue)
 			{
-				query = query.Where(t => t.Status == status.Value);
+				query = query.Where(t => t.Status == (TaskState) status.Value);
 			}
 
 			var totalCount = await query.CountAsync().ConfigureAwait(false);
 			var tasks = await query
 				.Skip((page - 1) * pageSize)
 				.Take(pageSize)
+				.Select(s => s.ToModel())
 				.ToListAsync().ConfigureAwait(false);
 
 			return (Tasks: tasks, TotalCount: totalCount);
 		}
 
-		public async Task<IEnumerable<TaskEntity>> GetOverdueTasks(DateTime onTime)
+		public async Task<IEnumerable<DomainModel.TaskModel>> GetOverdueTasks(DateTime onTime)
 		{
 			return await Context.Tasks
 				.Where(s => (s.Status == TaskState.New || s.Status == TaskState.InProgress) && s.DueDate < onTime)
+				.Select(s => s.ToModel())
 				.ToListAsync();
 		}
 

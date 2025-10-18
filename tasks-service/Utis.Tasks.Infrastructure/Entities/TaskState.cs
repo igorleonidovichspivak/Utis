@@ -1,8 +1,5 @@
-﻿namespace Utis.Tasks.Domain.Entities
+﻿namespace Utis.Tasks.Infrastructure.Entities
 {
-	/// <summary>
-	/// Статусы задач
-	/// </summary>
 	public enum TaskState
 	{
 		/// <summary>

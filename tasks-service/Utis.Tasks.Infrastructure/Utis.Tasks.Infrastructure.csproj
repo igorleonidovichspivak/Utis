@@ -20,10 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Entities\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Utis.Tasks.Domain\Utis.Tasks.Domain.csproj" />
   </ItemGroup>
 
