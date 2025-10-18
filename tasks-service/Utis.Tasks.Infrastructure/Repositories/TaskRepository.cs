@@ -7,7 +7,7 @@ using Utis.Tasks.Infrastructure.Entities;
 
 namespace Utis.Tasks.Infrastructure.Repositories
 {
-	public class TaskRepository : ITaskRepository, IRepository
+	public class TaskRepository : ITaskRepository
 	{
 		private readonly StorageContext Context;
 		public TaskRepository(StorageContext context)

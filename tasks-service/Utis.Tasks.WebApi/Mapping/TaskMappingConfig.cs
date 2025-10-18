@@ -1,5 +1,4 @@
-﻿using Mapster;
-using Utis.Tasks.Domain.Models;
+﻿using Utis.Tasks.Domain.Models;
 using Utis.Tasks.Infrastructure.Entities;
 using Utis.Tasks.WebApi.Dtos;
 using Utis.Tasks.WebApi.Models;

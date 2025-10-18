@@ -11,19 +11,17 @@ using Utis.Tasks.WebApi.Models.Converters;
 namespace Utis.Tasks.WebApi.Controllers
 {
 	[ApiController]
-    [Route("api/[controller]")]
-    public class TaskController : ControllerBase
-    {
-        //todo: mapping should done by Mapster or Automapper
-
-        private readonly ILogger<TaskController> _logger;
+	[Route("api/[controller]")]
+	public class TaskController : ControllerBase
+	{
+		private readonly ILogger<TaskController> _logger;
 		private readonly ITaskService _taskService;
 
 		public TaskController(ILogger<TaskController> logger, ITaskService taskService)
-        {
-            _logger = logger;
-            _taskService = taskService;
-        }
+		{
+			_logger = logger;
+			_taskService = taskService;
+		}
 
 		// POST: api/tasks
 		[HttpPost]
@@ -31,7 +29,7 @@ namespace Utis.Tasks.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult<int>> Create([FromBody] NewTaskRequest request)
 		{
-            _logger.LogInformation($"Creating new task {request}");
+			_logger.LogInformation($"Creating new task {request}");
 
 			if (!ModelState.IsValid)
 			{
@@ -46,8 +44,8 @@ namespace Utis.Tasks.WebApi.Controllers
 			var taskId = await _taskService.Create(request.ToModel());
 
 			_logger.LogInformation($"Created successfully");
-			
-            return CreatedAtAction(nameof(Create), taskId);
+
+			return CreatedAtAction(nameof(Create), taskId);
 		}
 
 		// GET: api/tasks/5
@@ -55,7 +53,7 @@ namespace Utis.Tasks.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status200OK)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<TaskDto>> Get(int id)
-        {
+		{
 			var task = await _taskService.Get(id);
 			if (task == null)
 				return NotFound($"Task with id {id} not found");
@@ -70,11 +68,11 @@ namespace Utis.Tasks.WebApi.Controllers
 		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<ActionResult<int>> Update([FromBody] UpdateTaskRequest request)
-        {
+		{
 			_logger.LogInformation($"Updating task with id {request.Id}");
 
-			
-            var result = await _taskService.Update(request.ToModel());
+
+			var result = await _taskService.Update(request.ToModel());
 
 			_logger.LogInformation($"Update successfully");
 			return result ? Ok($"Task with id {request.Id} updated successfully") : NotFound($"Task with id {request.Id} not found");
@@ -87,7 +85,7 @@ namespace Utis.Tasks.WebApi.Controllers
 		public async Task<ActionResult<bool>> Delete(int id)
 		{
 			var result = await _taskService.Delete(id);
-			
+
 			return result ? NoContent() : NotFound($"Task with id {id} not found");
 		}
 
@@ -136,8 +134,8 @@ namespace Utis.Tasks.WebApi.Controllers
 				TotalCount = totalCount
 			});
 		}
-		
+
 	}
 
-    
+
 }
