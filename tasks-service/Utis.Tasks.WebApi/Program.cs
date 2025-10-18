@@ -1,30 +1,20 @@
-using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Serilog;
-using Serilog.Core;
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Utis.Tasks.Infrastructure;
-using Utis.Tasks.WebApi.BackgroundServices;
 using Utis.Tasks.WebApi.Configuration;
 using Utis.Tasks.WebApi.Middlewares;
-using Utis.Tasks.WebApi.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-//MapsterConfig.Configure();
-
-//builder.Services.AddMapster();
 // Add services to the container.
 builder.Services.AddControllers()
 	.ConfigureApiBehaviorOptions(options =>  
 	{
 		options.SuppressModelStateInvalidFilter = false; // Auto validation is on
 	});
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
@@ -69,7 +59,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-//TODO: add tracing middleware with opentel
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseRouting();
 app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
@@ -86,18 +75,6 @@ app.MapHealthChecks("/health", new Microsoft.AspNetCore.Diagnostics.HealthChecks
 		await context.Response.WriteAsync(JsonSerializer.Serialize(result));
 	}
 });
-
-//// Health check endpoint
-//app.MapGet("/health", () =>
-//{
-//	return Results.Ok(new
-//	{
-//		status = "Healthy",
-//		timestamp = DateTime.UtcNow,
-//		service = "Currency API"
-//	});
-//})
-//.WithName("HealthCheck");
 
 app.MapControllers();
 

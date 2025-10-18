@@ -1,27 +1,10 @@
-﻿//using Microsoft.AspNetCore.Connections;
-//using Microsoft.EntityFrameworkCore.Metadata;
-//using Microsoft.EntityFrameworkCore.Metadata;
-using RabbitMQ.Client;
+﻿using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Channels;
 using Utis.Tasks.Domain.Interfaces.Services;
 
 namespace Utis.Tasks.WebApi.Services
 {
-	//public interface IRabbitMQProducerService : IDisposable
-	//{
-	//	Task SendMessageAsync<T>(string queueName, T message);
-		
-	//	void CreateQueue(string queueName);
-	//}
-
-	//public interface IRabbitMQConsumerService
-	//{
-	//	Task StartConsumingAsync<T>(string queueName, Func<T, Task> messageHandler);
-	//}
-
 	public class RabbitMQOptions
 	{
 		public string HostName { get; set; } = "localhost";
@@ -33,14 +16,7 @@ namespace Utis.Tasks.WebApi.Services
 
 		//
 		public string QueueName{ get; set; } = "expired-tasks";
-		//public ushort PrefetchCount { get; set; } = 1;
-		//public bool DurableQueues { get; set; } = true;
-		//public bool PersistentMessages { get; set; } = true;
-		//public int MaxConnectionRetries { get; set; } = 5;
-		//public string? DeadLetterExchange { get; set; }
-		//public string? DeadLetterRoutingKey { get; set; }
-		//public int? MessageTTL { get; set; }
-		//public int? MaxQueueLength { get; set; }
+
 	}
 
 	public class RabbitMqService : IRabbitMqService, IDisposable
@@ -152,6 +128,7 @@ namespace Utis.Tasks.WebApi.Services
 
 		public void Dispose()
 		{
+			_semaphore.Dispose();
 			DisposeAsync().AsTask().GetAwaiter().GetResult();
 		}
 
@@ -167,6 +144,7 @@ namespace Utis.Tasks.WebApi.Services
 			if (_connection?.IsOpen == true)
 				await _connection.CloseAsync();
 
+			
 			_channel?.DisposeAsync();
 			_connection?.DisposeAsync();
 		}

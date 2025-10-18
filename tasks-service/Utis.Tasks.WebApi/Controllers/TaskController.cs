@@ -1,6 +1,5 @@
 using Mapster;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Utis.Tasks.Domain.Entities;
 using Utis.Tasks.Domain.Interfaces.Services;
 using Utis.Tasks.WebApi.Dtos;
@@ -13,7 +12,7 @@ namespace Utis.Tasks.WebApi.Controllers
     [Route("api/[controller]")]
     public class TaskController : ControllerBase
     {
-        //todo: mapping should used done by Mapster or Automapper
+        //todo: mapping should done by Mapster or Automapper
 
         private readonly ILogger<TaskController> _logger;
 		private readonly ITaskService _taskService;

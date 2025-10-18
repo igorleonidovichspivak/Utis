@@ -76,14 +76,12 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 
 					}
 					// может быть rabbitMq.SendBatchedMessage(overdueTasks)
-
+					
 					// Помечаем задачи как просроченные
 					var taskIds = overdueTasks.Select(t => t.Id).ToList();
 
 					_logger.LogInformation($"Got {taskIds.Count} tasks overdue on time {currentTime}");
 
-					// Отправляем уведомления
-					//await notificationService.SendBatchOverdueNotificationAsync(overdueTasks);
 
 					await taskRepository.SetOverdueStatus(taskIds);
 					

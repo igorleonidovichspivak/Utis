@@ -19,7 +19,7 @@ namespace Utis.Tasks.WebApi.Middlewares
 		{
 			try
 			{
-				await _next(context); // continue pipeline
+				await _next(context);
 			}
 			catch (Exception ex)
 			{
@@ -30,7 +30,6 @@ namespace Utis.Tasks.WebApi.Middlewares
 				var statusCode = ex switch
 				{
 					ArgumentException => StatusCodes.Status400BadRequest,
-					AuthenticationException => StatusCodes.Status401Unauthorized,
 					_ => StatusCodes.Status500InternalServerError,
 				};
 
@@ -39,11 +38,10 @@ namespace Utis.Tasks.WebApi.Middlewares
 
 				context.Response.ContentType = "application/json";
 
-				//TODO: think of handling AuthenticationException
 				var response = new
 				{
 					error = "An unexpected error occurred",
-					detail = ex.Message // Remove this in production
+					detail = ex.Message 
 				};
 
 				var json = JsonSerializer.Serialize(response);

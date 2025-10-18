@@ -1,0 +1,6 @@
+services:
+  utis.processing.service:
+    image: ${DOCKER_REGISTRY-}utisprocessingservice
+    build:
+      context: .
+      dockerfile: Utis.Processing.Service/Dockerfile
