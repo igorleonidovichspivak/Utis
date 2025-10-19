@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Utis.Processing.Service
 {
-	public class RabbitMQConsumerService : IRabbitMQConsumerService, IAsyncDisposable
+	public class RabbitMQConsumerService : IRabbitMQConsumerService, IDisposable, IAsyncDisposable
 	{
 		private readonly ConnectionFactory _connectionFactory;
 		private readonly string _queueName;
@@ -59,6 +59,11 @@ namespace Utis.Processing.Service
 				throw;
 			}
 
+		}
+
+		public void Dispose()
+		{
+			DisposeAsync().AsTask().GetAwaiter().GetResult();
 		}
 
 		public async Task StartConsuming()
