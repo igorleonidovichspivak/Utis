@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Utis.Tasks.Infrastructure.Entities;
+using Utis.Tasks.Domain.Models;
+
 
 namespace Utis.Tasks.Infrastructure.EntityConfigurations
 {
