@@ -1,8 +1,6 @@
-﻿using Utis.Tasks.Domain.Models;
-using Utis.Tasks.Domain.Interfaces.Repositories;
+﻿using Utis.Tasks.Domain.Interfaces.Repositories;
 using Utis.Tasks.Domain.Interfaces.Services;
-using Utis.Tasks.WebApi.Dtos;
-using Utis.Tasks.WebApi.Services;
+using Utis.Tasks.Domain.Models;
 using Utis.Tasks.WebApi.Mapping;
 
 namespace Utis.Tasks.WebApi.BackgroundServices
@@ -12,7 +10,6 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 		private readonly IServiceProvider _serviceProvider;
 		private readonly ILogger<OverdueService> _logger;
 		private readonly PeriodicTimer _timer;
-		//private readonly int _batchSize = 100;
 
 		private const int CheckingPeriodInMinutes = 1;
 		public OverdueService(IServiceProvider serviceProvider, ILogger<OverdueService> logger) 
@@ -33,7 +30,7 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 					{
 						var taskRepository = scope.ServiceProvider.GetRequiredService<ITaskRepository>();
 						var rabbitMqService = scope.ServiceProvider.GetRequiredService<IRabbitMqService>();
-						await rabbitMqService.InitializeAsync();
+						
 
 						
 						await CheckOverdueTasksAsync(taskRepository, rabbitMqService, cancellationToken);
@@ -58,24 +55,13 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 
 				if (overdueTasks.Any())
 				{
-					foreach (var overdueTask in overdueTasks)
-					{
+					await SendMessageToRabbit(rabbitMq, currentTime, overdueTasks, cancellationToken);
 
-						var message = overdueTask.ToExpiredMessage(currentTime);
-
-						await rabbitMq.SendMessageAsync(message, cancellationToken);
-
-					}
-					// может быть rabbitMq.SendBatchedMessage(overdueTasks)
-					
 					// Помечаем задачи как просроченные
 					var taskIds = overdueTasks.Select(t => t.Id).ToList();
-
 					_logger.LogInformation($"Got {taskIds.Count} tasks overdue on time {currentTime}");
 
-
 					await taskRepository.SetOverdueStatus(taskIds);
-					
 				}
 				else
 				{
@@ -86,6 +72,23 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 			{
 				_logger.LogError(ex, "Error in overdue tasks check");
 				throw;
+			}
+		}
+
+		private async Task SendMessageToRabbit(IRabbitMqService rabbitMq, DateTime currentTime, IEnumerable<TaskModel> overdueTasks, CancellationToken cancellationToken)
+		{
+			try
+			{
+				await rabbitMq.InitializeAsync(cancellationToken);
+
+				var batch = overdueTasks.Select(s => s.ToExpiredMessage(currentTime)).ToArray();
+
+				await rabbitMq.SendMessageAsync(batch, cancellationToken);
+				await rabbitMq.PauseAsync(cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Failed to send expired tasks to RabbitMQ");
 			}
 		}
 

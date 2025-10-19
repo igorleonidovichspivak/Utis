@@ -1,23 +1,12 @@
-﻿using RabbitMQ.Client;
+﻿using Microsoft.Extensions.Options;
+using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 using Utis.Tasks.Domain.Interfaces.Services;
+using Utis.Tasks.WebApi.Configuration;
 
 namespace Utis.Tasks.WebApi.Services
 {
-	public class RabbitMQOptions
-	{
-		public string HostName { get; set; } = "localhost";
-		public int Port { get; set; } = 5672;
-		public string UserName { get; set; } = "guest";
-		public string Password { get; set; } = "guest";
-		public string VirtualHost { get; set; } = "/";
-		public string ClientName { get; set; } = "RabbitMQClient";
-
-		//
-		public string QueueName{ get; set; } = "expired-tasks";
-
-	}
 
 	public class RabbitMqService : IRabbitMqService, IDisposable
 	{
@@ -33,19 +22,19 @@ namespace Utis.Tasks.WebApi.Services
 		private bool _disposed = false;
 
 
-		public RabbitMqService(IConfiguration configuration, ILogger<RabbitMqService> logger)
+		public RabbitMqService(ILogger<RabbitMqService> logger, IOptions<RabbitMQOptions> settings)
 		{
 			_logger = logger;
 			_connectionFactory = new ConnectionFactory()
 			{
-				HostName = configuration["RabbitMQ:HostName"]!,
-				UserName = configuration["RabbitMQ:UserName"]!,
-				Password = configuration["RabbitMQ:Password"]!,
-				Port = int.Parse(configuration["RabbitMQ:Port"]!),
-				VirtualHost = configuration["RabbitMQ:VirtualHost"]!
+				HostName = settings.Value.HostName,
+				UserName = settings.Value.UserName,
+				Password = settings.Value.Password,
+				Port = settings.Value.Port,
+				VirtualHost = settings.Value.VirtualHost
 			};
 
-			_queueName = configuration["RabbitMQ:QueueName"]!;
+			_queueName = settings.Value.QueueName;
 
 			_jsonSerializationOptions = new JsonSerializerOptions
 			{
@@ -53,10 +42,18 @@ namespace Utis.Tasks.WebApi.Services
 			};
 		}
 
-		public async Task InitializeAsync()
+		public async Task InitializeAsync(CancellationToken cancellationToken = default)
 		{
+			if (_initialized || _disposed)
+				return;
+
+			await _semaphore.WaitAsync(cancellationToken);
 			try
 			{
+				//double checking, if yet initialized after locking 
+				if (_initialized || _disposed)
+					return;
+
 				_connection = await _connectionFactory.CreateConnectionAsync();
 				_channel = await _connection.CreateChannelAsync();
 
@@ -68,7 +65,10 @@ namespace Utis.Tasks.WebApi.Services
 				_logger.LogError(ex, "Failed to connect to RabbitMQ");
 				throw;
 			}
-			
+			finally
+			{
+				_semaphore.Release();
+			}
 		}
 
 		private async Task SendMessageAsync(string message, CancellationToken cancellationToken = default)
@@ -79,7 +79,7 @@ namespace Utis.Tasks.WebApi.Services
 			try
 			{
 				// Объявляем очередь (создаем если не существует)
-				await _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken); //agruments: null
+				await _channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, cancellationToken: cancellationToken);
 
 				var body = Encoding.UTF8.GetBytes(message);
 				var props = new BasicProperties
@@ -126,6 +126,24 @@ namespace Utis.Tasks.WebApi.Services
 			await SendMessageAsync(jsonMessage, cancellationToken);
 		}
 
+
+		public async Task PauseAsync(CancellationToken cancellationToken = default)
+		{
+			if (_channel?.IsOpen == true)
+			{
+				await _channel.CloseAsync(cancellationToken: cancellationToken);
+				_logger.LogInformation("RabbitMQ channel paused for queue: {QueueName}", _queueName);
+			}
+		}
+
+		public async Task ResumeAsync(CancellationToken cancellationToken = default)
+		{
+			if (_channel != null && !_channel.IsOpen && _connection?.IsOpen == true)
+			{
+				_channel = await _connection.CreateChannelAsync();
+				_logger.LogInformation("RabbitMQ channel resumed for queue: {QueueName}", _queueName);
+			}
+		}
 		public void Dispose()
 		{
 			_semaphore.Dispose();

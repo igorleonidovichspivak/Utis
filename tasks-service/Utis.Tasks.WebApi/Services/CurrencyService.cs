@@ -64,23 +64,7 @@ namespace Utis.Tasks.WebApi.Services
 			}
 		}
 
-		public async Task<CurrencyRate> GetCurrencyRateAsync(string charCode)
-		{
-			if (string.IsNullOrWhiteSpace(charCode))
-				throw new ArgumentException("Currency code cannot be empty", nameof(charCode));
-
-			var rates = await GetCurrentRatesAsync();
-			var upperCharCode = charCode.ToUpperInvariant();
-
-			if (rates.Valute.TryGetValue(upperCharCode, out var currency))
-			{
-				return currency.ToCurrencyRate();
-			}
-
-			_logger.LogWarning("Currency with code {CharCode} not found", charCode);
-			throw new ArgumentException($"Currency with code {charCode} not found");
-		}
-
+	
 		public async Task<List<CurrencyRate>> GetAllRatesAsync()
 		{
 			var rates = await GetCurrentRatesAsync();

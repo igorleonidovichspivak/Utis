@@ -30,6 +30,9 @@ builder.Host.UseSerilog();
 
 builder.Services.AddMemoryCache();
 
+builder.Services.Configure<RabbitMQOptions>(
+	builder.Configuration.GetSection("RabbitMQ"));
+
 builder.Services.AddApplicationServices(builder.Configuration);
 
 // convert all enums to strings
@@ -37,6 +40,8 @@ builder.Services.Configure<JsonOptions>(options =>
 {
 	options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+
+
 
 var app = builder.Build();
 
