@@ -1,4 +1,5 @@
-﻿using Utis.Tasks.Domain.Interfaces.Repositories;
+﻿using System.ComponentModel.DataAnnotations;
+using Utis.Tasks.Domain.Interfaces.Repositories;
 using Utis.Tasks.Domain.Interfaces.Services;
 using Utis.Tasks.Domain.Models;
 
@@ -33,6 +34,12 @@ namespace Utis.Tasks.WebApi.Services
 
 		public async Task<bool> Update(TaskModel updatedTask)
 		{
+			//some kind of simple bussines rules validation, fluneValidation also can be used
+			if (updatedTask.Status == TaskState.Overdue && updatedTask.DueDate > DateTime.UtcNow)
+			{
+				throw new ArgumentException("Task cannot be overdue and DueDaie in Future");
+			}
+
 			var succefullUpdate = await _taskRepository.Update(updatedTask);
 
 			if (succefullUpdate)
@@ -72,8 +79,6 @@ namespace Utis.Tasks.WebApi.Services
 		{
 			return await _taskRepository.GetPagedFiltred(page, pageSize, status);
 		}
-
-		
 
 	}
 }

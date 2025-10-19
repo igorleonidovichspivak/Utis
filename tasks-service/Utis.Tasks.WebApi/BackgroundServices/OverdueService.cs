@@ -22,24 +22,14 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 		{
 			_logger.LogInformation("Overdue Tasks Background Service started");
 
+			using var scope = _serviceProvider.CreateScope();
+			var taskRepository = scope.ServiceProvider.GetRequiredService<ITaskRepository>();
+			var rabbitMqService = scope.ServiceProvider.GetRequiredService<IRabbitMqService>();
+
 			while (await _timer.WaitForNextTickAsync(cancellationToken) && !cancellationToken.IsCancellationRequested)
 			{
-				try
-				{
-					using (var scope = _serviceProvider.CreateScope())
-					{
-						var taskRepository = scope.ServiceProvider.GetRequiredService<ITaskRepository>();
-						var rabbitMqService = scope.ServiceProvider.GetRequiredService<IRabbitMqService>();
-						
 
-						
-						await CheckOverdueTasksAsync(taskRepository, rabbitMqService, cancellationToken);
-					}
-				}
-				catch (Exception ex)
-				{
-					_logger.LogError(ex, "Error checking overdue tasks");
-				}
+				await CheckOverdueTasksAsync(taskRepository, rabbitMqService, cancellationToken);
 			}
 
 			_logger.LogInformation("Overdue Tasks Background Service stopped");
@@ -71,7 +61,6 @@ namespace Utis.Tasks.WebApi.BackgroundServices
 			catch (Exception ex)
 			{
 				_logger.LogError(ex, "Error in overdue tasks check");
-				throw;
 			}
 		}
 

@@ -8,7 +8,7 @@ using Utis.Tasks.WebApi.Configuration;
 namespace Utis.Tasks.WebApi.Services
 {
 
-	public class RabbitMqService : IRabbitMqService, IDisposable
+	public class RabbitMqService : IRabbitMqService, IDisposable, IAsyncDisposable
 	{
 		private readonly ConnectionFactory _connectionFactory;
 		private readonly string _queueName;
@@ -146,7 +146,6 @@ namespace Utis.Tasks.WebApi.Services
 		}
 		public void Dispose()
 		{
-			_semaphore.Dispose();
 			DisposeAsync().AsTask().GetAwaiter().GetResult();
 		}
 
@@ -156,15 +155,23 @@ namespace Utis.Tasks.WebApi.Services
 
 			_disposed = true;
 
-			if (_channel?.IsOpen == true)
-				await _channel.CloseAsync();
+			await _semaphore.WaitAsync();
+			try
+			{
+				if (_channel?.IsOpen == true)
+					await _channel.CloseAsync();
 
-			if (_connection?.IsOpen == true)
-				await _connection.CloseAsync();
+				if (_connection?.IsOpen == true)
+					await _connection.CloseAsync();
 
-			
-			_channel?.DisposeAsync();
-			_connection?.DisposeAsync();
+				_channel?.DisposeAsync();
+				_connection?.DisposeAsync();
+			}
+			finally
+			{
+				_semaphore.Release();
+				_semaphore.Dispose();
+			}
 		}
 	}
 

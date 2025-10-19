@@ -32,7 +32,7 @@ namespace Utis.Tasks.WebApi.Services
 
 
 
-		public async Task<CurrencyRatesResponse> GetCurrentRatesAsync()
+		private async Task<CurrencyRatesResponse> GetCurrentRatesAsync()
 		{
 			if (_cache.TryGetValue(ResponseRatesCacheKey, out CurrencyRatesResponse cachedResponse))
 			{
